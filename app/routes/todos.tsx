@@ -1,4 +1,5 @@
-import { data, Form } from "react-router";
+import { data, useFetcher } from "react-router";
+import TodoList from "~/components/TodoList";
 import { todos } from "~/lib/db.server";
 import type { Route } from "./+types/todos";
 
@@ -21,14 +22,63 @@ export async function loader() {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
-  const description = String(formData.get("description"));
-  await todos.create(description);
+  const intent = formData.get("intent");
+  switch (intent) {
+    case "create-task": {
+      const description = String(formData.get("description"));
 
-  return data({ ok: true }, { status: 201 });
+      await todos.create(description);
+
+      break;
+    }
+    case "toggle-task-completion": {
+      const id = String(formData.get("id"));
+      const completed = String(formData.get("completed")) === "true";
+
+      await todos.update(id, {
+        completed,
+        completedAt: completed ? new Date() : undefined,
+      });
+
+      break;
+    }
+    case "edit-task": {
+      const id = String(formData.get("id"));
+
+      await todos.update(id, { editing: false });
+
+      break;
+    }
+    case "save-task": {
+      const id = String(formData.get("id"));
+      const description = String(formData.get("description"));
+
+      await todos.update(id, {
+        description,
+        editing: false,
+      });
+
+      break;
+    }
+    case "delete-task": {
+      const id = String(formData.get("id"));
+
+      await todos.delete(id);
+
+      break;
+    }
+    default: {
+      throw data("Unknown intent", { status: 400 });
+    }
+  }
+
+  return { ok: true };
 }
 
 export default function Todos({ loaderData }: Route.ComponentProps) {
   const { tasks } = loaderData;
+
+  const fetcher = useFetcher();
 
   return (
     <div className="flex flex-1 flex-col md:mx-auto md:w-[720px]">
@@ -43,7 +93,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
         </select>
       </header>
       <main className="flex-1 space-y-8">
-        <Form
+        <fetcher.Form
           method="POST"
           className="rounded-full border border-gray-200 bg-white/90 shadow-md dark:border-gray-700 dark:bg-gray-900"
         >
@@ -56,18 +106,18 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
               className="flex-1 rounded-full border-2 border-gray-200 px-3 py-2 text-sm font-bold text-black dark:border-white/50"
               aria-label="New task"
             />
-            <button className="rounded-full border-2 border-gray-200/50 bg-gradient-to-tl from-[#00fff0] to-[#0083fe] px-3 py-2 text-base font-black transition hover:scale-105 hover:border-gray-500 sm:px-6 dark:border-white/50 dark:from-[#8e0e00] dark:to-[#1f1c18] dark:hover:border-white">
+            <button
+              name="intent"
+              value="create-task"
+              className="rounded-full border-2 border-gray-200/50 bg-gradient-to-tl from-[#00fff0] to-[#0083fe] px-3 py-2 text-base font-black transition hover:scale-105 hover:border-gray-500 sm:px-6 dark:border-white/50 dark:from-[#8e0e00] dark:to-[#1f1c18] dark:hover:border-white"
+            >
               Add
             </button>
           </fieldset>
-        </Form>
+        </fetcher.Form>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
           {tasks.length > 0 ? (
-            <ul>
-              {tasks.map((task) => (
-                <li key={task.id}>{task.description}</li>
-              ))}
-            </ul>
+            <TodoList todos={tasks} />
           ) : (
             <p className="text-center leading-7">No tasks available</p>
           )}
