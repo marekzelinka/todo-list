@@ -1,3 +1,4 @@
+import { todos } from "~/lib/db.server";
 import type { Route } from "./+types/todos";
 
 export const meta: Route.MetaFunction = () => {
@@ -10,8 +11,14 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export default function Todos() {
-  const tasks: string[] = [];
+export async function loader() {
+  const tasks = await todos.read();
+
+  return { tasks };
+}
+
+export default function Todos({ loaderData }: Route.ComponentProps) {
+  const { tasks } = loaderData;
 
   return (
     <div className="flex flex-1 flex-col md:mx-auto md:w-[720px]">
@@ -44,7 +51,7 @@ export default function Todos() {
           {tasks.length > 0 ? (
             <ul>
               {tasks.map((task) => (
-                <li key={task}>{task}</li>
+                <li key={task.id}>{task.description}</li>
               ))}
             </ul>
           ) : (
