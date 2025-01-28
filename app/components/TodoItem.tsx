@@ -36,6 +36,21 @@ export function TodoItem({ todo }: { todo: Item }) {
 
   const fetcher = useFetcher();
 
+  const isTogglingCompletion =
+    fetcher.state !== "idle" &&
+    fetcher.formData?.get("intent") === "toggle-task-completion";
+  const isSaving =
+    fetcher.state !== "idle" && fetcher.formData?.get("intent") === "save-task";
+
+  const completed = isTogglingCompletion
+    ? fetcher.formData?.get("completed") === "true"
+    : todo.completed;
+  const completedAt =
+    isTogglingCompletion || !todo.completedAt ? new Date() : todo.completedAt;
+  const description = isSaving
+    ? String(fetcher.formData?.get("description"))
+    : todo.description;
+
   const [isEditing, setIsEditing] = useState(false);
 
   const editing = typeof document !== "undefined" ? isEditing : todo.editing;
@@ -52,16 +67,16 @@ export function TodoItem({ todo }: { todo: Item }) {
         <input
           type="hidden"
           name="completed"
-          value={todo.completed ? "false" : "true"}
+          value={completed ? "false" : "true"}
         />
         <button
-          aria-label={`Mark task as ${todo.completed ? "incomplete" : "complete"}`}
+          aria-label={`Mark task as ${completed ? "incomplete" : "complete"}`}
           disabled={editing || isActionInProgress}
           name="intent"
           value="toggle-task-completion"
           className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
         >
-          {todo.completed ? (
+          {completed ? (
             <SquareCheckIcon className="size-4" />
           ) : (
             <SquareIcon className="size-4" />
@@ -72,22 +87,22 @@ export function TodoItem({ todo }: { todo: Item }) {
         <div
           className={clsx(
             "flex-1 space-y-0.5",
-            todo.completed || isActionInProgress ? "opacity-25" : "",
+            completed || isActionInProgress ? "opacity-25" : "",
           )}
         >
-          <p>{todo.description}</p>
+          <p>{description}</p>
           <div className="space-y-0.5 text-xs">
             <p>
               Created at{" "}
-              <time dateTime={`${new Date(todo.createdAt).toISOString()}`}>
+              <time dateTime={new Date(todo.createdAt).toISOString()}>
                 {dateFormatter.format(new Date(todo.createdAt))}
               </time>
             </p>
-            {todo.completed && (
+            {completed && (
               <p>
                 Completed at{" "}
-                <time dateTime={`${new Date(todo.completedAt!).toISOString()}`}>
-                  {dateFormatter.format(new Date(todo.completedAt!))}
+                <time dateTime={new Date(completedAt).toISOString()}>
+                  {dateFormatter.format(new Date(completedAt))}
                 </time>
               </p>
             )}
@@ -131,7 +146,7 @@ export function TodoItem({ todo }: { todo: Item }) {
           <>
             <input
               name="description"
-              defaultValue={todo.description}
+              defaultValue={description}
               required
               className="flex-1 rounded-full border-2 px-3 py-2 text-sm text-black"
             />
@@ -148,7 +163,7 @@ export function TodoItem({ todo }: { todo: Item }) {
         ) : (
           <button
             aria-label="Edit task"
-            disabled={todo.completed || isActionInProgress}
+            disabled={completed || isActionInProgress}
             name="intent"
             value="edit-task"
             className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
@@ -158,7 +173,7 @@ export function TodoItem({ todo }: { todo: Item }) {
         )}
         <button
           aria-label="Delete task"
-          disabled={todo.completed || editing || isActionInProgress}
+          disabled={completed || editing || isActionInProgress}
           name="intent"
           value="delete-task"
           className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
