@@ -1,8 +1,8 @@
-import clsx from "clsx";
-import { data, Form, useSearchParams } from "react-router";
+import { data, useSearchParams } from "react-router";
 import { AddTodo } from "~/components/AddTodo";
 import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
+import { TodoViewFilter } from "~/components/TodoViewFilter";
 import { todos } from "~/lib/db.server";
 import type { View } from "~/types";
 import type { Route } from "./+types/todos";
@@ -120,45 +120,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
           <TodoActions tasks={tasks} />
         </div>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <Form className="flex items-center justify-center gap-12 text-sm">
-            <button
-              aria-label="View all tasks"
-              name="view"
-              value="all"
-              className={clsx(
-                "transition",
-                view === "all" ? "font-bold" : "opacity-50 hover:opacity-100",
-              )}
-            >
-              All
-            </button>
-            <button
-              aria-label="View active tasks"
-              name="view"
-              value="active"
-              className={clsx(
-                "transition",
-                view === "active"
-                  ? "font-bold"
-                  : "opacity-50 hover:opacity-100",
-              )}
-            >
-              Active
-            </button>
-            <button
-              aria-label="View completed"
-              name="view"
-              value="completed"
-              className={clsx(
-                "transition",
-                view === "completed"
-                  ? "font-bold"
-                  : "opacity-50 hover:opacity-100",
-              )}
-            >
-              Completed
-            </button>
-          </Form>
+          <TodoViewFilter view={view as View} />
         </div>
       </main>
     </div>
