@@ -2,13 +2,7 @@ import { useMemo } from "react";
 import type { Item, View } from "~/types";
 import { TodoItem } from "./TodoItem";
 
-export default function TodoList({
-  todos,
-  view,
-}: {
-  todos: Item[];
-  view: View;
-}) {
+export function TodoList({ todos, view }: { todos: Item[]; view: View }) {
   const visibleTodos = useMemo(
     () =>
       todos.filter((todo) =>

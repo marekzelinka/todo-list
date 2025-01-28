@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { data, Form, useFetcher, useSearchParams } from "react-router";
 import { TodoActions } from "~/components/TodoActions";
-import TodoList from "~/components/TodoList";
+import { TodoList } from "~/components/TodoList";
 import { todos } from "~/lib/db.server";
 import type { View } from "~/types";
 import type { Route } from "./+types/todos";
