@@ -1,7 +1,9 @@
-import { data, useFetcher } from "react-router";
+import clsx from "clsx";
+import { data, Form, useFetcher, useSearchParams } from "react-router";
 import { TodoActions } from "~/components/TodoActions";
 import TodoList from "~/components/TodoList";
 import { todos } from "~/lib/db.server";
+import type { View } from "~/types";
 import type { Route } from "./+types/todos";
 
 export const meta: Route.MetaFunction = () => {
@@ -91,6 +93,9 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
 
   const fetcher = useFetcher();
 
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get("view") || "all";
+
   return (
     <div className="flex flex-1 flex-col md:mx-auto md:w-[720px]">
       <header className="mb-12 flex items-center justify-between">
@@ -128,7 +133,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
         </fetcher.Form>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
           {tasks.length > 0 ? (
-            <TodoList todos={tasks} />
+            <TodoList todos={tasks} view={view as View} />
           ) : (
             <p className="text-center leading-7">No tasks available</p>
           )}
@@ -137,26 +142,45 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
           <TodoActions tasks={tasks} />
         </div>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <div className="flex items-center justify-center gap-12 text-sm">
+          <Form className="flex items-center justify-center gap-12 text-sm">
             <button
               aria-label="View all tasks"
-              className="opacity-50 transition hover:opacity-100"
+              name="view"
+              value="all"
+              className={clsx(
+                "transition",
+                view === "all" ? "font-bold" : "opacity-50 hover:opacity-100",
+              )}
             >
               All
             </button>
             <button
               aria-label="View active tasks"
-              className="opacity-50 transition hover:opacity-100"
+              name="view"
+              value="active"
+              className={clsx(
+                "transition",
+                view === "active"
+                  ? "font-bold"
+                  : "opacity-50 hover:opacity-100",
+              )}
             >
               Active
             </button>
             <button
               aria-label="View completed"
-              className="opacity-50 transition hover:opacity-100"
+              name="view"
+              value="completed"
+              className={clsx(
+                "transition",
+                view === "completed"
+                  ? "font-bold"
+                  : "opacity-50 hover:opacity-100",
+              )}
             >
               Completed
             </button>
-          </div>
+          </Form>
         </div>
       </main>
     </div>
