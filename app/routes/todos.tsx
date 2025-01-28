@@ -1,4 +1,5 @@
 import { data, useFetcher } from "react-router";
+import { TodoActions } from "~/components/TodoActions";
 import TodoList from "~/components/TodoList";
 import { todos } from "~/lib/db.server";
 import type { Route } from "./+types/todos";
@@ -67,6 +68,16 @@ export async function action({ request }: Route.ActionArgs) {
 
       break;
     }
+    case "clear-completed-tasks": {
+      await todos.clearCompleted();
+
+      break;
+    }
+    case "delete-all-tasks": {
+      await todos.deleteAll();
+
+      break;
+    }
     default: {
       throw data("Unknown intent", { status: 400 });
     }
@@ -123,19 +134,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
           )}
         </div>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <div className="flex items-center justify-between gap-4 text-sm">
-            <p className="text-center leading-7">
-              {tasks.length} {tasks.length === 1 ? "item" : "items"} left
-            </p>
-            <div className="flex items-center gap-4">
-              <button className="text-red-400 transition hover:text-red-600">
-                Clear Completed
-              </button>
-              <button className="text-red-400 transition hover:text-red-600">
-                Delete All
-              </button>
-            </div>
-          </div>
+          <TodoActions tasks={tasks} />
         </div>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
           <div className="flex items-center justify-center gap-12 text-sm">
