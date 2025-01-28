@@ -4,6 +4,14 @@ import type { Item } from "~/types";
 export function TodoActions({ tasks }: { tasks: Item[] }) {
   const fetcher = useFetcher();
 
+  const isClearingCompleted =
+    fetcher.state === "submitting" &&
+    fetcher.formData?.get("intent") === "clear-completed-tasks";
+
+  const isDeletingAll =
+    fetcher.state === "submitting" &&
+    fetcher.formData?.get("intent") === "delete-all-tasks";
+
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
       <p className="text-center leading-7">
@@ -40,20 +48,22 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
         }}
       >
         <button
-          disabled={!tasks.some((todo) => todo.completed)}
+          disabled={
+            !tasks.some((todo) => todo.completed) || isClearingCompleted
+          }
           name="intent"
           value="clear-completed-tasks"
           className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
         >
-          Clear Completed
+          {isClearingCompleted ? "Clearing…" : "Clear Completed"}
         </button>
         <button
-          disabled={tasks.length === 0}
+          disabled={tasks.length === 0 || isDeletingAll}
           name="intent"
           value="delete-all-tasks"
           className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
         >
-          Delete All
+          {isDeletingAll ? "Deleting…" : "Delete All"}
         </button>
       </fetcher.Form>
     </div>
