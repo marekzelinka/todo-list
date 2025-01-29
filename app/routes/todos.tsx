@@ -1,5 +1,6 @@
 import { data, useSearchParams } from "react-router";
 import { AddTodo } from "~/components/AddTodo";
+import ThemeSwitcher from "~/components/ThemeSwitcher";
 import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
 import { TodoViewFilter } from "~/components/TodoViewFilter";
@@ -94,11 +95,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
           TODO
         </h1>
-        <select className="appearance-none rounded-3xl border border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <option>System</option>
-          <option>Light</option>
-          <option>Dark</option>
-        </select>
+        <ThemeSwitcher />
       </header>
       <main className="flex-1 space-y-8">
         <AddTodo />

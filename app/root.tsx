@@ -1,4 +1,6 @@
+import clsx from "clsx";
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
@@ -8,6 +10,8 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
+import { useTheme } from "./components/ThemeScript";
+import { parseTheme } from "./lib/theme.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,7 +27,20 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const theme = await parseTheme(request);
+
+  return data(
+    { theme },
+    {
+      headers: { Vary: "Cookie" },
+    },
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const theme = useTheme() === "dark" ? "dark" : "";
+
   return (
     <html
       lang="en"
@@ -35,7 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen max-w-[100vw] flex-col overflow-x-hidden bg-gradient-to-r from-[#00fff0] to-[#0083fe] px-4 py-8 text-black dark:from-[#8E0E00] dark:to-[#1F1C18] dark:text-white">
+      <body
+        className={clsx(
+          "flex min-h-screen max-w-[100vw] flex-col overflow-x-hidden bg-gradient-to-r from-[#00fff0] to-[#0083fe] px-4 py-8 text-black dark:from-[#8E0E00] dark:to-[#1F1C18] dark:text-white",
+          theme,
+        )}
+      >
         {children}
         <ScrollRestoration />
         <Scripts />
