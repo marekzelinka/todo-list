@@ -17,7 +17,7 @@ export function TodoList({ todos, view }: { todos: Item[]; view: View }) {
         fetcher.state !== "idle" &&
         fetcher.formData?.get("intent") === "delete-task",
     )
-    .map((fetcher) => fetcher.formData?.get("id"));
+    .map((fetcher) => String(fetcher.formData?.get("id")));
 
   const visibleTodos = useMemo(() => {
     let filteredTodos = todos.filter((todo) =>

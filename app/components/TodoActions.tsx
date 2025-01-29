@@ -1,13 +1,59 @@
-import { useFetcher } from "react-router";
+import { useFetcher, useFetchers } from "react-router";
 import type { Item } from "~/types";
 
 export function TodoActions({ tasks }: { tasks: Item[] }) {
+  const fetchers = useFetchers();
+
+  const isTogglingCopletion = fetchers.some(
+    (fetcher) =>
+      fetcher.state !== "idle" &&
+      fetcher.formData?.get("intent") === "toggle-task-completion",
+  );
+  const completingTodoIds = fetchers
+    .filter(
+      (fetcher) =>
+        fetcher.state !== "idle" &&
+        fetcher.formData?.get("intent") === "toggle-task-completion",
+    )
+    .map((fetcher) => ({
+      id: String(fetcher.formData?.get("id")),
+      completed: fetcher.formData?.get("completed") === "true",
+    }));
+  const isDeleting = fetchers.some(
+    (fetcher) =>
+      fetcher.state !== "idle" &&
+      fetcher.formData?.get("intent") === "delete-task",
+  );
+  const deletingTodoIds = fetchers
+    .filter(
+      (fetcher) =>
+        fetcher.state !== "idle" &&
+        fetcher.formData?.get("intent") === "delete-task",
+    )
+    .map((fetcher) => fetcher.formData?.get("id"));
+
+  tasks = isTogglingCopletion
+    ? tasks.map((task) => {
+        const completingTodo = completingTodoIds.find(
+          (todo) => todo.id === task.id,
+        );
+        if (completingTodo) {
+          task.completed = completingTodo.completed;
+        }
+
+        return task;
+      })
+    : tasks;
+
+  tasks = isDeleting
+    ? tasks.filter((task) => !deletingTodoIds.includes(task.id))
+    : tasks;
+
   const fetcher = useFetcher();
 
   const isClearingCompleted =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("intent") === "clear-completed-tasks";
-
   const isDeletingAll =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("intent") === "delete-all-tasks";

@@ -23,12 +23,12 @@ export function TodoItem({ todo }: { todo: Item }) {
 
   const isClearingCompleted = fetchers.some(
     (fetcher) =>
-      fetcher.state === "submitting" &&
+      fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "clear-completed-tasks",
   );
   const isDeletingAll = fetchers.some(
     (fetcher) =>
-      fetcher.state === "submitting" &&
+      fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "delete-all-tasks",
   );
   const isActionInProgress =

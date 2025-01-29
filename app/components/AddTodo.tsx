@@ -8,7 +8,7 @@ export function AddTodo() {
   const addInputRef = useRef<HTMLInputElement>(null);
 
   const isAdding =
-    fetcher.state === "submitting" &&
+    fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "create-task";
 
   useEffect(() => {

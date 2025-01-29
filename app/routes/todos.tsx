@@ -37,11 +37,11 @@ export async function action({ request }: Route.ActionArgs) {
     }
     case "toggle-task-completion": {
       const id = String(formData.get("id"));
-      const completed = String(formData.get("completed")) === "true";
+      const completed = String(formData.get("completed"));
 
       await todos.update(id, {
-        completed,
-        completedAt: completed ? new Date() : undefined,
+        completed: completed === "true",
+        completedAt: completed === "true" ? new Date() : undefined,
       });
 
       break;
