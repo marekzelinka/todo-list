@@ -49,13 +49,14 @@ export default function ThemeSwitcher() {
           <button
             key={option.name}
             role="option"
-            aria-selected={option.name === theme}
+            type="submit"
             name="theme"
             value={option.name}
             className={clsx(
               "flex w-full items-center px-4 py-2 transition hover:bg-gray-200 dark:hover:bg-gray-700",
               option.name === theme ? "text-sky-500 dark:text-red-500" : "",
             )}
+            aria-selected={option.name === theme}
           >
             <option.icon className="mr-2 size-5" />{" "}
             {option.name.replace(/^./, (c) => c.toUpperCase())}
