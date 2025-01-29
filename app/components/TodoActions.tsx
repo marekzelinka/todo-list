@@ -44,6 +44,8 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
     ? tasks.filter((task) => !deletingTodoIds.includes(task.id))
     : tasks;
 
+  const activeTaskCount = tasks.filter((task) => !task.completed).length;
+
   const fetcher = useFetcher();
 
   const isClearingCompleted =
@@ -57,7 +59,7 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
       <p className="text-center leading-7">
-        {tasks.length} {tasks.length === 1 ? "item" : "items"} left
+        {activeTaskCount} {activeTaskCount === 1 ? "item" : "items"} left
       </p>
       <fetcher.Form method="POST" className="flex items-center gap-4">
         <button
