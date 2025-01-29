@@ -10,7 +10,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
-import { useTheme } from "./components/ThemeScript";
+import { ThemeScript, useTheme } from "./components/ThemeScript";
 import { parseTheme } from "./lib/theme.server";
 
 export const links: Route.LinksFunction = () => [
@@ -47,6 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       className="font-system bg-white/90 antialiased dark:bg-gray-900"
     >
       <head>
+        <ThemeScript />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
