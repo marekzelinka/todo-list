@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFetcher, useFetchers } from "react-router";
 import type { Item } from "~/types";
 import { DeleteIcon } from "./icons/DeleteIcon";
@@ -26,11 +26,13 @@ export function TodoItem({ todo }: { todo: Item }) {
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "clear-completed-tasks",
   );
+
   const isDeletingAll = fetchers.some(
     (fetcher) =>
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "delete-all-tasks",
   );
+
   const isActionInProgress =
     isDeletingAll || (todo.completed && isClearingCompleted);
 
@@ -42,24 +44,33 @@ export function TodoItem({ todo }: { todo: Item }) {
   const isSaving =
     fetcher.state !== "idle" && fetcher.formData?.get("intent") === "save-task";
 
-  const completed = isTogglingCompletion
-    ? fetcher.formData?.get("completed") === "true"
-    : todo.completed;
-  const completedAt =
-    isTogglingCompletion || !todo.completedAt ? new Date() : todo.completedAt;
-  const description = isSaving
-    ? String(fetcher.formData?.get("description"))
-    : todo.description;
+  const optimisticTodo = {
+    completed: isTogglingCompletion
+      ? fetcher.formData?.get("completed") === "true"
+      : todo.completed,
+    completedAt:
+      isTogglingCompletion || !todo.completedAt ? new Date() : todo.completedAt,
+    description: isSaving
+      ? String(fetcher.formData?.get("description"))
+      : todo.description,
+  };
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const editing = typeof document !== "undefined" ? isEditing : todo.editing;
+  // Used to focus the edit form input when we enter edit mode
+  const editInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (isEditing && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [isEditing]);
 
   return (
     <li
       className={clsx(
         "my-4 flex gap-4 border-b border-dashed border-gray-200 pb-4 last:border-none last:pb-0 dark:border-gray-700",
-        editing ? "items-center" : "items-start",
+        isEditing ? "items-center" : "items-start",
       )}
     >
       <fetcher.Form method="POST">
@@ -67,30 +78,31 @@ export function TodoItem({ todo }: { todo: Item }) {
         <input
           type="hidden"
           name="completed"
-          value={completed ? "false" : "true"}
+          value={optimisticTodo.completed ? "false" : "true"}
         />
         <button
-          aria-label={`Mark task as ${completed ? "incomplete" : "complete"}`}
-          disabled={editing || isActionInProgress}
+          type="submit"
           name="intent"
           value="toggle-task-completion"
+          disabled={isEditing || isActionInProgress}
           className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+          aria-label={`Mark task as ${optimisticTodo.completed ? "incomplete" : "complete"}`}
         >
-          {completed ? (
+          {optimisticTodo.completed ? (
             <SquareCheckIcon className="size-4" />
           ) : (
             <SquareIcon className="size-4" />
           )}
         </button>
       </fetcher.Form>
-      {!editing && (
+      {!isEditing && (
         <div
           className={clsx(
             "flex-1 space-y-0.5",
-            completed || isActionInProgress ? "opacity-25" : "",
+            optimisticTodo.completed || isActionInProgress ? "opacity-25" : "",
           )}
         >
-          <p>{description}</p>
+          <p>{optimisticTodo.description}</p>
           <div className="space-y-0.5 text-xs">
             <p>
               Created at{" "}
@@ -98,11 +110,13 @@ export function TodoItem({ todo }: { todo: Item }) {
                 {dateFormatter.format(new Date(todo.createdAt))}
               </time>
             </p>
-            {completed && (
+            {optimisticTodo.completed && (
               <p>
                 Completed at{" "}
-                <time dateTime={new Date(completedAt).toISOString()}>
-                  {dateFormatter.format(new Date(completedAt))}
+                <time
+                  dateTime={new Date(optimisticTodo.completedAt).toISOString()}
+                >
+                  {dateFormatter.format(new Date(optimisticTodo.completedAt))}
                 </time>
               </p>
             )}
@@ -111,72 +125,69 @@ export function TodoItem({ todo }: { todo: Item }) {
       )}
       <fetcher.Form
         method="POST"
-        className={clsx("flex items-center gap-4", editing ? "flex-1" : "")}
-        onSubmit={(event) => {
-          const submitter = (event.nativeEvent as SubmitEvent)
-            .submitter as HTMLButtonElement;
-          switch (submitter.value) {
-            case "edit-task": {
-              setIsEditing(true);
-
-              event.preventDefault();
-
-              break;
-            }
-            case "save-task": {
-              setIsEditing(false);
-
-              break;
-            }
-            case "delete-task": {
-              const shouldDelete = confirm(
-                "Are you sure you want to delete this task?",
-              );
-              if (!shouldDelete) {
-                event.preventDefault();
-              }
-
-              break;
-            }
-          }
-        }}
+        className={clsx("flex items-center gap-4", isEditing ? "flex-1" : "")}
       >
         <input type="hidden" name="id" value={todo.id} />
-        {editing ? (
+        {isEditing ? (
           <>
             <input
+              ref={editInputRef}
               name="description"
-              defaultValue={description}
+              onBlur={(event) => {
+                // Cancel edit mode when we click outside the input
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setIsEditing(false);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setIsEditing(false);
+                }
+              }}
               required
+              defaultValue={optimisticTodo.description}
               className="flex-1 rounded-full border-2 px-3 py-2 text-sm text-black"
             />
             <button
-              aria-label="Save task"
-              disabled={isActionInProgress}
+              type="submit"
               name="intent"
               value="save-task"
+              onClick={() => setIsEditing(false)}
+              disabled={isActionInProgress}
               className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
+              aria-label="Save task"
             >
               <SaveIcon className="size-4" />
             </button>
           </>
         ) : (
           <button
-            aria-label="Edit task"
-            disabled={completed || isActionInProgress}
+            type="button"
             name="intent"
             value="edit-task"
+            onClick={() => setIsEditing(true)}
+            disabled={optimisticTodo.completed || isActionInProgress}
             className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+            aria-label="Edit task"
           >
             <EditIcon className="size-4" />
           </button>
         )}
         <button
-          aria-label="Delete task"
-          disabled={completed || editing || isActionInProgress}
+          type="submit"
           name="intent"
           value="delete-task"
+          onClick={(event) => {
+            const shouldDelete = confirm(
+              "Are you sure you want to delete this task?",
+            );
+            if (!shouldDelete) {
+              event.preventDefault();
+            }
+          }}
+          disabled={optimisticTodo.completed || isEditing || isActionInProgress}
           className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+          aria-label="Delete task"
         >
           <DeleteIcon className="size-4" />
         </button>

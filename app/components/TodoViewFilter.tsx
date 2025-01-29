@@ -6,35 +6,38 @@ export function TodoViewFilter({ view }: { view: View }) {
   return (
     <Form className="flex items-center justify-center gap-12 text-sm">
       <button
-        aria-label="View all tasks"
+        type="submit"
         name="view"
         value="all"
         className={clsx(
           "transition",
           view === "all" ? "font-bold" : "opacity-50 hover:opacity-100",
         )}
+        aria-label="View all tasks"
       >
         All
       </button>
       <button
-        aria-label="View active tasks"
+        type="submit"
         name="view"
         value="active"
         className={clsx(
           "transition",
           view === "active" ? "font-bold" : "opacity-50 hover:opacity-100",
         )}
+        aria-label="View active tasks"
       >
         Active
       </button>
       <button
-        aria-label="View completed"
+        type="submit"
         name="view"
         value="completed"
         className={clsx(
           "transition",
           view === "completed" ? "font-bold" : "opacity-50 hover:opacity-100",
         )}
+        aria-label="View completed"
       >
         Completed
       </button>

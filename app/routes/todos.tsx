@@ -46,13 +46,6 @@ export async function action({ request }: Route.ActionArgs) {
 
       break;
     }
-    case "edit-task": {
-      const id = String(formData.get("id"));
-
-      await todos.update(id, { editing: false });
-
-      break;
-    }
     case "save-task": {
       const id = String(formData.get("id"));
       const description = String(formData.get("description"));
@@ -93,7 +86,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
   const { tasks } = loaderData;
 
   const [searchParams] = useSearchParams();
-  const view = searchParams.get("view") || "all";
+  const view = (searchParams.get("view") || "all") as View;
 
   return (
     <div className="flex flex-1 flex-col md:mx-auto md:w-[720px]">
@@ -111,7 +104,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
         <AddTodo />
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
           {tasks.length > 0 ? (
-            <TodoList todos={tasks} view={view as View} />
+            <TodoList todos={tasks} view={view} />
           ) : (
             <p className="text-center leading-7">No tasks available</p>
           )}
@@ -120,7 +113,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
           <TodoActions tasks={tasks} />
         </div>
         <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <TodoViewFilter view={view as View} />
+          <TodoViewFilter view={view} />
         </div>
       </main>
     </div>

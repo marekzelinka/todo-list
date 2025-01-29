@@ -6,27 +6,24 @@ import { TodoItem } from "./TodoItem";
 export function TodoList({ todos, view }: { todos: Item[]; view: View }) {
   const fetchers = useFetchers();
 
-  const isDeleting = fetchers.some(
+  const pendingDeleteTodoFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "delete-task",
   );
-  const deletingTodoIds = fetchers
-    .filter(
-      (fetcher) =>
-        fetcher.state !== "idle" &&
-        fetcher.formData?.get("intent") === "delete-task",
-    )
-    .map((fetcher) => String(fetcher.formData?.get("id")));
+  const isDeleting = pendingDeleteTodoFetchers.length > 0;
+  const deletingTodoIds = pendingDeleteTodoFetchers.map((fetcher) =>
+    String(fetcher.formData?.get("id")),
+  );
 
   const visibleTodos = useMemo(() => {
-    let filteredTodos = todos.filter((todo) =>
-      view === "active"
-        ? !todo.completed
-        : view === "completed"
-          ? todo.completed
-          : true,
-    );
+    let filteredTodos = todos;
+
+    if (view !== "all") {
+      filteredTodos = todos.filter((todo) =>
+        view === "active" ? !todo.completed : todo.completed,
+      );
+    }
 
     if (isDeleting) {
       filteredTodos = filteredTodos.filter(

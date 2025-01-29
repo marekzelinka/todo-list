@@ -4,37 +4,32 @@ import type { Item } from "~/types";
 export function TodoActions({ tasks }: { tasks: Item[] }) {
   const fetchers = useFetchers();
 
-  const isTogglingCopletion = fetchers.some(
+  const pendingToggleTodoCompletionFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "toggle-task-completion",
   );
-  const completingTodoIds = fetchers
-    .filter(
-      (fetcher) =>
-        fetcher.state !== "idle" &&
-        fetcher.formData?.get("intent") === "toggle-task-completion",
-    )
-    .map((fetcher) => ({
+  const isTogglingCompletion = pendingToggleTodoCompletionFetchers.length > 0;
+  const completingTodos = pendingToggleTodoCompletionFetchers.map(
+    (fetcher) => ({
       id: String(fetcher.formData?.get("id")),
       completed: fetcher.formData?.get("completed") === "true",
-    }));
-  const isDeleting = fetchers.some(
+    }),
+  );
+
+  const pendingDeleteTodoFetchers = fetchers.filter(
     (fetcher) =>
       fetcher.state !== "idle" &&
       fetcher.formData?.get("intent") === "delete-task",
   );
-  const deletingTodoIds = fetchers
-    .filter(
-      (fetcher) =>
-        fetcher.state !== "idle" &&
-        fetcher.formData?.get("intent") === "delete-task",
-    )
-    .map((fetcher) => fetcher.formData?.get("id"));
+  const isDeleting = pendingDeleteTodoFetchers.length > 0;
+  const deletingTodoIds = pendingDeleteTodoFetchers.map((fetcher) =>
+    String(fetcher.formData?.get("id")),
+  );
 
-  tasks = isTogglingCopletion
+  tasks = isTogglingCompletion
     ? tasks.map((task) => {
-        const completingTodo = completingTodoIds.find(
+        const completingTodo = completingTodos.find(
           (todo) => todo.id === task.id,
         );
         if (completingTodo) {
@@ -54,6 +49,7 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
   const isClearingCompleted =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("intent") === "clear-completed-tasks";
+
   const isDeletingAll =
     fetcher.state === "submitting" &&
     fetcher.formData?.get("intent") === "delete-all-tasks";
@@ -63,50 +59,39 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
       <p className="text-center leading-7">
         {tasks.length} {tasks.length === 1 ? "item" : "items"} left
       </p>
-      <fetcher.Form
-        method="post"
-        className="flex items-center gap-4"
-        onSubmit={(event) => {
-          const submitter = (event.nativeEvent as SubmitEvent)
-            .submitter as HTMLButtonElement;
-          switch (submitter.value) {
-            case "clear-completed-tasks": {
-              const shouldClearCompleted = confirm(
-                "Are you sure you want to clear all completed tasks?",
-              );
-              if (!shouldClearCompleted) {
-                event.preventDefault();
-              }
-
-              break;
-            }
-            case "delete-all-tasks": {
-              const shouldDeleteAll = confirm(
-                "Are you sure you want to delete all tasks?",
-              );
-              if (!shouldDeleteAll) {
-                event.preventDefault();
-              }
-
-              break;
-            }
-          }
-        }}
-      >
+      <fetcher.Form method="POST" className="flex items-center gap-4">
         <button
+          type="submit"
+          name="intent"
+          value="clear-completed-tasks"
+          onClick={(event) => {
+            const shouldClearCompleted = confirm(
+              "Are you sure you want to clear all completed tasks?",
+            );
+            if (!shouldClearCompleted) {
+              event.preventDefault();
+            }
+          }}
           disabled={
             !tasks.some((todo) => todo.completed) || isClearingCompleted
           }
-          name="intent"
-          value="clear-completed-tasks"
           className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
         >
           {isClearingCompleted ? "Clearing…" : "Clear Completed"}
         </button>
         <button
-          disabled={tasks.length === 0 || isDeletingAll}
+          type="submit"
           name="intent"
           value="delete-all-tasks"
+          onClick={(event) => {
+            const shouldDeleteAll = confirm(
+              "Are you sure you want to delete all tasks?",
+            );
+            if (!shouldDeleteAll) {
+              event.preventDefault();
+            }
+          }}
+          disabled={tasks.length === 0 || isDeletingAll}
           className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
         >
           {isDeletingAll ? "Deleting…" : "Delete All"}
