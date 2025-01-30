@@ -2,15 +2,8 @@ import type { Item, Todo } from "~/types";
 
 const items: Item[] = [];
 
-async function simulateDelay(): Promise<void> {
-  const ARTIFICIAL_DELAY = 1000;
-  await new Promise((resolve) => setTimeout(resolve, ARTIFICIAL_DELAY));
-}
-
 export const todos: Todo = {
-  async create(description: string) {
-    await simulateDelay();
-
+  create: async (description: string) => {
     const createdTodo: Item = {
       id: Math.random().toString(16).slice(2),
       description,
@@ -22,14 +15,13 @@ export const todos: Todo = {
 
     return createdTodo;
   },
-  async read() {
-    await simulateDelay();
-
+  read: async () => {
     return items;
   },
-  async update(id: string, fields: Partial<Omit<Item, "id" | "createdAt">>) {
-    await simulateDelay();
-
+  update: async (
+    id: string,
+    fields: Partial<Omit<Item, "id" | "createdAt">>,
+  ) => {
     const itemIndex = items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return undefined;
@@ -45,9 +37,7 @@ export const todos: Todo = {
 
     return updatedTodo;
   },
-  async delete(id: string) {
-    await simulateDelay();
-
+  delete: async (id: string) => {
     const itemIndex = items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return undefined;
@@ -57,9 +47,7 @@ export const todos: Todo = {
 
     return deletedTodo;
   },
-  async clearCompleted() {
-    await simulateDelay();
-
+  clearCompleted: async () => {
     for (let i = items.length - 1; i >= 0; i--) {
       if (items[i].completed) {
         items.splice(i, 1);
@@ -68,9 +56,7 @@ export const todos: Todo = {
 
     return items;
   },
-  async deleteAll() {
-    await simulateDelay();
-
+  deleteAll: async () => {
     items.length = 0;
 
     return items;
