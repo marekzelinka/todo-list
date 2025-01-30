@@ -40,7 +40,7 @@ export async function requireUser(request: Request) {
   };
 }
 
-export async function signoutUser() {
+export function signoutUser() {
   return redirect("/signin", {
     /**
      * Clear the cookie to handle cases where the session ID remains in the
