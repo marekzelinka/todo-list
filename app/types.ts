@@ -1,3 +1,5 @@
+import type { ObjectId } from "mongodb";
+
 export interface Item {
   id: string;
   description: string;
@@ -74,3 +76,33 @@ export type View = "all" | "active" | "completed";
  * - "dark": Applies the dark color scheme.
  */
 export type Theme = "system" | "light" | "dark";
+
+/**
+ * Represents a user in the application.
+ */
+export interface User {
+  /**
+   * Unique identifier for the user in the database.
+   * This field is optional because it should be left out when creating a new user,
+   * allowing the MongoDB driver to automatically generate it.
+   */
+  _id?: ObjectId;
+  createdAt: Date;
+  name: string;
+  email: string;
+  password: {
+    // Used in hashing the user's password.
+    salt: string;
+    // Hash of the user's password.
+    hash: string;
+  };
+  tasks: Item[];
+  /**
+   * Token for resetting the user's password. This field is optional and is only present if a password reset was requested.
+   */
+  forgotPasswordToken?: string;
+  /**
+   * The expiration timestamp for the password reset token, in milliseconds since the Unix epoch. This field is optional.
+   */
+  forgotPasswordTokenExpireAt?: number;
+}
