@@ -3,7 +3,7 @@ import type { Item, Todo } from "~/types";
 const items: Item[] = [];
 
 export const todos: Todo = {
-  create: async (description: string) => {
+  create: async (description) => {
     const createdTodo: Item = {
       id: Math.random().toString(16).slice(2),
       description,
@@ -18,10 +18,7 @@ export const todos: Todo = {
   read: async () => {
     return items;
   },
-  update: async (
-    id: string,
-    fields: Partial<Omit<Item, "id" | "createdAt">>,
-  ) => {
+  update: async (id, fields) => {
     const itemIndex = items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return undefined;
@@ -37,7 +34,7 @@ export const todos: Todo = {
 
     return updatedTodo;
   },
-  delete: async (id: string) => {
+  delete: async (id) => {
     const itemIndex = items.findIndex((item) => item.id === id);
     if (itemIndex === -1) {
       return undefined;
