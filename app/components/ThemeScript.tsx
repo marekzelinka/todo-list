@@ -7,12 +7,20 @@ export function useTheme(): Theme {
   const rootLoaderData = useRouteLoaderData<typeof rootLoader>("root");
   const rootTheme = rootLoaderData?.theme ?? "system";
 
-  const navigation = useNavigation();
-  const theme = navigation.formData?.has("theme")
-    ? (navigation.formData.get("theme") as Theme)
-    : rootTheme;
+  const optimisticTheme = useOptimisticTheme();
 
-  return theme;
+  return optimisticTheme ?? rootTheme;
+}
+
+/**
+ * If the user's changing their theme mode preference, this will return the
+ * value it's being changed to.
+ */
+export function useOptimisticTheme(): Theme | undefined {
+  const navigation = useNavigation();
+  if (navigation.formData?.has("theme")) {
+    return navigation.formData.get("theme") as Theme;
+  }
 }
 
 export function ThemeScript() {
@@ -20,12 +28,12 @@ export function ThemeScript() {
 
   const script = useMemo(
     () => `
-        const theme = ${JSON.stringify(theme)};
-        const media = window.matchMedia("(prefers-color-scheme: dark)")
-        if (theme === "system" && media.matches) {
-          document.documentElement.classList.add("dark");
-        }
-      `,
+      const theme = ${JSON.stringify(theme)};
+      const media = window.matchMedia("(prefers-color-scheme: dark)")
+      if (theme === "system" && media.matches) {
+        document.documentElement.classList.add("dark");
+      }
+    `,
     [], // eslint-disable-line -- we don't want this script to ever change
   );
 

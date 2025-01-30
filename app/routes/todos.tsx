@@ -1,6 +1,5 @@
 import { data, useSearchParams } from "react-router";
 import { AddTodo } from "~/components/AddTodo";
-import ThemeSwitcher from "~/components/ThemeSwitcher";
 import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
 import { TodoViewFilter } from "~/components/TodoViewFilter";
@@ -90,29 +89,21 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
   const view = (searchParams.get("view") || "all") as View;
 
   return (
-    <div className="flex flex-1 flex-col md:mx-auto md:w-[720px]">
-      <header className="mb-12 flex items-center justify-between">
-        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-          TODO
-        </h1>
-        <ThemeSwitcher />
-      </header>
-      <main className="flex-1 space-y-8">
-        <AddTodo />
-        <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          {tasks.length > 0 ? (
-            <TodoList todos={tasks} view={view} />
-          ) : (
-            <p className="text-center leading-7">No tasks available</p>
-          )}
-        </div>
-        <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <TodoActions tasks={tasks} />
-        </div>
-        <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-          <TodoViewFilter view={view} />
-        </div>
-      </main>
+    <div className="space-y-8">
+      <AddTodo />
+      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
+        {tasks.length > 0 ? (
+          <TodoList todos={tasks} view={view} />
+        ) : (
+          <p className="text-center leading-7">No tasks available</p>
+        )}
+      </div>
+      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
+        <TodoActions tasks={tasks} />
+      </div>
+      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
+        <TodoViewFilter view={view} />
+      </div>
     </div>
   );
 }

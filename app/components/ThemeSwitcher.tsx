@@ -27,7 +27,7 @@ export default function ThemeSwitcher() {
       <Form
         role="listbox"
         method="POST"
-        action="/api/theme"
+        action="/resources/theme"
         preventScrollReset
         replace
         onSubmit={() => {

@@ -1,5 +1,5 @@
 import { data, redirect } from "react-router";
-import { serializeTheme, validateTheme } from "~/lib/theme.server";
+import { serializeTheme, validateTheme } from "~/utils/theme.server";
 import type { Route } from "./+types/theme";
 
 export async function action({ request }: Route.ActionArgs) {
