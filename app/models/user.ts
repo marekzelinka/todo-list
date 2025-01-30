@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { ObjectId } from "mongodb";
 import type { User } from "~/types";
 import { mongodb } from "~/utils/mongodb.server";
 
@@ -72,6 +73,22 @@ export async function verifyUser(email: string, password: string) {
     }
 
     return { error: null, data: user._id.toString() };
+  } catch (error) {
+    return { error: "An unexpected error occured.", data: null };
+  }
+}
+
+export async function getUser(id: string) {
+  try {
+    const client = await mongodb();
+    const collection = client.db(dbName).collection<User>(collUsers);
+
+    const user = await collection.findOne({ _id: new ObjectId(id) });
+    if (!user) {
+      return { error: "User not found.", data: null };
+    }
+
+    return { error: null, data: user };
   } catch (error) {
     return { error: "An unexpected error occured.", data: null };
   }

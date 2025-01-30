@@ -4,6 +4,7 @@ import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
 import { TodoViewFilter } from "~/components/TodoViewFilter";
 import type { View } from "~/types";
+import { requireUserId } from "~/utils/auth.server";
 import { todos } from "~/utils/db.server";
 import type { Route } from "./+types/todos";
 
@@ -17,7 +18,9 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  await requireUserId(request);
+
   const tasks = await todos.read();
 
   return { tasks };

@@ -11,6 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { ThemeScript, useTheme } from "./components/ThemeScript";
+import { requireUser } from "./utils/auth.server";
 import { parseTheme } from "./utils/theme.server";
 
 export const links: Route.LinksFunction = () => [
@@ -29,9 +30,13 @@ export const links: Route.LinksFunction = () => [
 
 export async function loader({ request }: Route.LoaderArgs) {
   const theme = await parseTheme(request);
+  const user = await requireUser(request);
 
   return data(
-    { theme },
+    {
+      theme,
+      user,
+    },
     {
       headers: { Vary: "Cookie" },
     },
