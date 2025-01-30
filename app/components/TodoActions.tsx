@@ -49,11 +49,11 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
   const fetcher = useFetcher();
 
   const isClearingCompleted =
-    fetcher.state === "submitting" &&
+    fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "clear-completed-tasks";
 
   const isDeletingAll =
-    fetcher.state === "submitting" &&
+    fetcher.state !== "idle" &&
     fetcher.formData?.get("intent") === "delete-all-tasks";
 
   return (
