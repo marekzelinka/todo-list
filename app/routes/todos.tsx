@@ -4,8 +4,8 @@ import ThemeSwitcher from "~/components/ThemeSwitcher";
 import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
 import { TodoViewFilter } from "~/components/TodoViewFilter";
-import { todos } from "~/lib/db.server";
 import type { View } from "~/types";
+import { todos } from "~/utils/db.server";
 import type { Route } from "./+types/todos";
 
 export const meta: Route.MetaFunction = () => {
