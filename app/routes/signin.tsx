@@ -23,8 +23,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   const formData = await request.formData();
 
-  const email = String(formData.get("email"));
-  const password = String(formData.get("password"));
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
   const fieldErrors = validateAuthForm({ email, password });
   if (fieldErrors) {
@@ -119,9 +119,9 @@ export default function Signin({ actionData }: Route.ComponentProps) {
                 </div>
                 <div className="relative">
                   <input
-                    id="password"
                     type={showPassword ? "text" : "password"}
                     name="password"
+                    id="password"
                     autoComplete="current-password"
                     required
                     minLength={8}

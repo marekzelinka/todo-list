@@ -89,7 +89,7 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
   const { tasks } = loaderData;
 
   const [searchParams] = useSearchParams();
-  const view = (searchParams.get("view") || "all") as View;
+  const view = (searchParams.get("view") ?? "all") as View;
 
   return (
     <div className="space-y-8">

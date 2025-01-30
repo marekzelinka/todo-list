@@ -3,33 +3,35 @@ import { data, Form, Link, redirect, useNavigation } from "react-router";
 import EyeIcon from "~/components/icons/EyeIcon";
 import EyeOffIcon from "~/components/icons/EyeOffIcon";
 import LoaderIcon from "~/components/icons/LoaderIcon";
-import { createUser } from "~/models/user";
+import { updatePassword } from "~/models/user";
 import { validateAuthForm } from "~/utils/user-validation";
-import type { Route } from "./+types/signup";
+import type { Route } from "./+types/reset-password";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: "Sign Up | Todo App" },
+    { title: "Reset Password | Todo App" },
     {
       name: "description",
-      content: "Create an account to manage your tasks efficiently.",
+      content: "Set a new password to secure your account.",
     },
   ];
 };
 
 export async function action({ request }: Route.ActionArgs) {
+  const url = new URL(request.url);
+  const token = url.searchParams.get("token") ?? "";
+
   const formData = await request.formData();
 
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const newPassword = formData.get("new-password") as string;
+  const confirmPassword = formData.get("confirm-password") as string;
 
-  const fieldErrors = validateAuthForm({ name, email, password });
+  const fieldErrors = validateAuthForm({ newPassword, confirmPassword });
   if (fieldErrors) {
     return data({ formError: null, fieldErrors }, { status: 400 });
   }
 
-  const { error } = await createUser(name, email, password);
+  const { error } = await updatePassword(token, newPassword);
   if (error) {
     return data({ formError: error, fieldErrors: null }, { status: 400 });
   }
@@ -37,25 +39,26 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect("/signin");
 }
 
-export default function Signup({ actionData }: Route.ComponentProps) {
+export default function ResetPassword({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === "/signup";
+  const isSubmitting = navigation.formAction === "/reset-password";
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
         <h1 className="text-xl font-extrabold tracking-tight md:text-2xl">
-          Sign up
+          Password reset
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{" "}
+          Never mind!{" "}
           <Link
             to="/signin"
             className="relative text-sm font-medium text-blue-500 after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
           >
-            Sign in
+            Take me back to login
           </Link>
         </p>
       </header>
@@ -69,92 +72,28 @@ export default function Signup({ actionData }: Route.ComponentProps) {
           <div className="space-y-4">
             <fieldset disabled={isSubmitting} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="name" className="block text-sm/5 font-medium">
-                  Name
+                <label
+                  htmlFor="new-password"
+                  className="block text-sm/5 font-medium"
+                >
+                  New password
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  required
-                  minLength={2}
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
-                  placeholder="Enter your name"
-                  aria-invalid={
-                    actionData?.fieldErrors?.name ? true : undefined
-                  }
-                  aria-describedby={
-                    actionData?.fieldErrors?.name ? "name-error" : undefined
-                  }
-                />
-                {actionData?.fieldErrors?.name && (
-                  <p
-                    id="name-error"
-                    className="text-sm/5 font-medium text-red-500"
-                  >
-                    {actionData?.fieldErrors.name}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm/5 font-medium">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  autoComplete="email"
-                  required
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
-                  placeholder="Enter your email address"
-                  aria-invalid={
-                    actionData?.fieldErrors?.email ? true : undefined
-                  }
-                  aria-describedby={
-                    actionData?.fieldErrors?.email ? "email-error" : undefined
-                  }
-                />
-                {actionData?.fieldErrors?.email && (
-                  <p
-                    id="email-error"
-                    className="text-sm/5 font-medium text-red-500"
-                  >
-                    {actionData?.fieldErrors.email}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between gap-4">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm/5 font-medium"
-                  >
-                    Password
-                  </label>
-                  <Link
-                    to="/forgot-password"
-                    className="relative text-sm/5 font-medium text-blue-500 after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
                 <div className="relative">
                   <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    name="password"
+                    type={showNewPassword ? "text" : "password"}
+                    name="new-password"
+                    id="new-password"
                     autoComplete="new-password"
                     required
                     minLength={8}
                     className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
-                    placeholder="Enter your password"
+                    placeholder="Enter new password"
                     aria-invalid={
-                      actionData?.fieldErrors?.password ? true : undefined
+                      actionData?.fieldErrors?.newPassword ? true : undefined
                     }
                     aria-describedby={
-                      actionData?.fieldErrors?.password
-                        ? "password-error"
+                      actionData?.fieldErrors?.newPassword
+                        ? "new-password-error"
                         : undefined
                     }
                   />
@@ -166,11 +105,11 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                       tabIndex={-1}
                       type="button"
                       onClick={() =>
-                        setShowPassword((prevPassword) => !prevPassword)
+                        setShowNewPassword((prevPassword) => !prevPassword)
                       }
                       className="inline-flex text-gray-200 transition-colors hover:text-black/50 disabled:opacity-50 dark:text-white/50 dark:hover:text-white"
                     >
-                      {showPassword ? (
+                      {showNewPassword ? (
                         <EyeIcon className="size-4" />
                       ) : (
                         <EyeOffIcon className="size-4" />
@@ -178,12 +117,69 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                     </button>
                   </div>
                 </div>
-                {actionData?.fieldErrors?.password && (
+                {actionData?.fieldErrors?.newPassword && (
                   <p
-                    id="password-error"
+                    id="new-password-error"
                     className="text-sm/5 font-medium text-red-500"
                   >
-                    {actionData?.fieldErrors.password}
+                    {actionData?.fieldErrors.newPassword}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirm-password"
+                  className="block text-sm/5 font-medium"
+                >
+                  Confirm password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirm-password"
+                    id="confirm-password"
+                    autoComplete="off"
+                    required
+                    minLength={8}
+                    className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
+                    placeholder="Re-enter new password"
+                    aria-invalid={
+                      actionData?.fieldErrors?.confirmPassword
+                        ? true
+                        : undefined
+                    }
+                    aria-describedby={
+                      actionData?.fieldErrors?.confirmPassword
+                        ? "confirm-password-error"
+                        : undefined
+                    }
+                  />
+                  <div
+                    className="absolute inset-y-0 right-4 flex items-center"
+                    aria-hidden
+                  >
+                    <button
+                      tabIndex={-1}
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword((prevPassword) => !prevPassword)
+                      }
+                      className="inline-flex text-gray-200 transition-colors hover:text-black/50 disabled:opacity-50 dark:text-white/50 dark:hover:text-white"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeIcon className="size-4" />
+                      ) : (
+                        <EyeOffIcon className="size-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                {actionData?.fieldErrors?.confirmPassword && (
+                  <p
+                    id="confirm-password-error"
+                    className="text-sm/5 font-medium text-red-500"
+                  >
+                    {actionData?.fieldErrors.confirmPassword}
                   </p>
                 )}
               </div>
@@ -200,7 +196,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                     <LoaderIcon className="size-4 animate-spin" />
                   </div>
                 ) : null}
-                {isSubmitting ? "Signing up…" : "Sign up"}
+                {isSubmitting ? "Reseting…" : "Reset"}
               </button>
             </fieldset>
             {actionData?.formError && (
