@@ -47,3 +47,32 @@ export async function createUser(
     return { error: "An unexpected error occured.", data: null };
   }
 }
+
+export async function verifyUser(email: string, password: string) {
+  try {
+    const client = await mongodb();
+    const collection = client.db(dbName).collection<User>(collUsers);
+
+    const user = await collection.findOne({ email });
+
+    // If the user is not found, return a generic error message.
+    // This prevents revealing whether the email or password is incorrect.
+    if (!user) {
+      return { error: "Incorrect email or password.", data: null };
+    }
+
+    const hash = crypto
+      .pbkdf2Sync(password, user.password.salt, 100000, 64, "sha512")
+      .toString("hex");
+
+    // If the hashed password does not match, return a generic error message.
+    // This also prevents revealing whether the email or password is incorrect.
+    if (hash !== user.password.hash) {
+      return { error: "Incorrect email or password.", data: null };
+    }
+
+    return { error: null, data: user._id.toString() };
+  } catch (error) {
+    return { error: "An unexpected error occured.", data: null };
+  }
+}

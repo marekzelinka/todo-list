@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { data, Form, Link, useNavigation } from "react-router";
+import { data, Form, Link, redirect, useNavigation } from "react-router";
 import EyeIcon from "~/components/icons/EyeIcon";
 import EyeOffIcon from "~/components/icons/EyeOffIcon";
 import LoaderIcon from "~/components/icons/LoaderIcon";
-import { createUser } from "~/models/user";
+import { verifyUser } from "~/models/user";
+import { commitSession, getSession } from "~/utils/session.server";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/signin";
 
@@ -18,23 +19,29 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
   const formData = await request.formData();
 
-  const name = String(formData.get("name"));
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
 
-  const fieldErrors = validateAuthForm({ name, email, password });
+  const fieldErrors = validateAuthForm({ email, password });
   if (fieldErrors) {
     return data({ formError: null, fieldErrors }, { status: 400 });
   }
 
-  const { error } = await createUser(name, email, password);
+  const { error, data: id } = await verifyUser(email, password);
   if (error) {
     return data({ formError: error, fieldErrors: null }, { status: 400 });
   }
 
-  // return redirect("/signin");
+  // Login succeeded, send them to the home page.
+  session.set("_id", id as string);
+
+  return redirect("/", {
+    headers: { "Set-Cookie": await commitSession(session) },
+  });
 }
 
 export default function Signin({ actionData }: Route.ComponentProps) {
