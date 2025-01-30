@@ -10,6 +10,7 @@ export default [
   layout("layouts/auth.tsx", [
     route("signup", "routes/signup.tsx"),
     route("signin", "routes/signin.tsx"),
+    route("forgot-password", "routes/forgot-password.tsx"),
   ]),
   route("resources/signout", "resources/signout.tsx"),
   route("resources/theme", "resources/theme.tsx"),

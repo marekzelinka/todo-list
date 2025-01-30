@@ -93,3 +93,17 @@ export async function getUser(id: string) {
     return { error: "An unexpected error occured.", data: null };
   }
 }
+
+export async function initiatePasswordReset(email: string): Promise<
+  | {
+      error: string;
+      data: null;
+    }
+  | {
+      error: null;
+      data: string;
+    }
+> {
+  // TODO
+  return {} as any;
+}
