@@ -158,15 +158,25 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                         : undefined
                     }
                   />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword((prevPassword) => !prevPassword)
-                    }
-                    className="absolute top-[5px] right-2 text-gray-200 transition-colors hover:text-black/50 disabled:opacity-50 dark:text-white/50 dark:hover:text-white"
+                  <div
+                    className="absolute inset-y-0 right-4 flex items-center"
+                    aria-hidden
                   >
-                    {showPassword ? <EyeIcon /> : <EyeOffIcon />}
-                  </button>
+                    <button
+                      tabIndex={-1}
+                      type="button"
+                      onClick={() =>
+                        setShowPassword((prevPassword) => !prevPassword)
+                      }
+                      className="inline-flex text-gray-200 transition-colors hover:text-black/50 disabled:opacity-50 dark:text-white/50 dark:hover:text-white"
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="size-4" />
+                      ) : (
+                        <EyeOffIcon className="size-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 {actionData?.fieldErrors?.password && (
                   <p
@@ -183,7 +193,10 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                 className="relative inline-flex h-9 w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200/50 bg-gradient-to-tl from-[#00fff0] to-[#0083fe] px-4 py-2 text-sm font-medium shadow transition hover:border-gray-500 disabled:pointer-events-none disabled:opacity-50 dark:border-white/50 dark:from-[#8e0e00] dark:to-[#1f1c18] dark:hover:border-white"
               >
                 {isSubmitting ? (
-                  <div className="absolute inset-y-0 left-3 flex items-center">
+                  <div
+                    className="absolute inset-y-0 left-4 flex items-center"
+                    aria-hidden
+                  >
                     <LoaderIcon className="size-4 animate-spin" />
                   </div>
                 ) : null}
