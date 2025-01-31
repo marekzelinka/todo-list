@@ -34,7 +34,7 @@ export function AddTodo() {
           type="text"
           name="description"
           required
-          className="flex-1 rounded-full border-2 border-gray-200 px-3 py-2 text-sm font-bold text-black dark:border-white/50"
+          className="flex-1 rounded-full border-2 border-gray-200 px-3 py-2 text-sm font-bold text-black placeholder:text-gray-400 dark:border-white/50"
           placeholder="Create a new todo..."
           aria-label="New task"
         />

@@ -58,7 +58,7 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
 
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
-      <p className="text-center leading-7">
+      <p className="leading-7">
         {activeTaskCount} {activeTaskCount === 1 ? "item" : "items"} left
       </p>
       <fetcher.Form method="POST" className="flex items-center gap-4">
@@ -77,7 +77,7 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
           disabled={
             !tasks.some((todo) => todo.completed) || isClearingCompleted
           }
-          className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
+          className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-50"
         >
           {isClearingCompleted ? "Clearing…" : "Clear Completed"}
         </button>
@@ -94,7 +94,7 @@ export function TodoActions({ tasks }: { tasks: Item[] }) {
             }
           }}
           disabled={tasks.length === 0 || isDeletingAll}
-          className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-25"
+          className="text-red-400 transition hover:text-red-600 disabled:pointer-events-none disabled:opacity-50"
         >
           {isDeletingAll ? "Deleting…" : "Delete All"}
         </button>

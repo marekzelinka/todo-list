@@ -102,18 +102,20 @@ export default function Todos({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-8">
       <AddTodo />
-      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-        {tasks.length > 0 ? (
-          <TodoList todos={tasks} view={view} />
-        ) : (
-          <p className="text-center leading-7">No tasks available</p>
-        )}
-      </div>
-      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-        <TodoActions tasks={tasks} />
-      </div>
-      <div className="rounded-3xl border border-gray-200 bg-white/90 px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
-        <TodoViewFilter view={view} />
+      <div className="divide-y divide-gray-200 rounded-3xl border border-gray-200 bg-white/90 dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900">
+        <div className="px-4 py-2">
+          {tasks.length > 0 ? (
+            <TodoList todos={tasks} view={view} />
+          ) : (
+            <p className="text-center leading-7">No tasks available</p>
+          )}
+        </div>
+        <div className="px-6 py-2">
+          <TodoViewFilter view={view} />
+        </div>
+        <div className="px-6 py-2">
+          <TodoActions tasks={tasks} />
+        </div>
       </div>
     </div>
   );

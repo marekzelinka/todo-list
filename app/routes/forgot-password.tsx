@@ -71,7 +71,7 @@ export default function ForgotPassword({ actionData }: Route.ComponentProps) {
                   id="email"
                   autoComplete="email"
                   required
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
+                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                   placeholder="Enter your email address"
                   aria-invalid={
                     actionData?.fieldErrors?.email ? true : undefined

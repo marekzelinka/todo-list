@@ -85,7 +85,7 @@ export function TodoItem({ todo }: { todo: Item }) {
           name="intent"
           value="toggle-task-completion"
           disabled={isEditing || isActionInProgress}
-          className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+          className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-700"
           aria-label={`Mark task as ${optimisticTodo.completed ? "incomplete" : "complete"}`}
         >
           {optimisticTodo.completed ? (
@@ -99,7 +99,7 @@ export function TodoItem({ todo }: { todo: Item }) {
         <div
           className={clsx(
             "flex-1 space-y-0.5",
-            optimisticTodo.completed || isActionInProgress ? "opacity-25" : "",
+            optimisticTodo.completed || isActionInProgress ? "opacity-50" : "",
           )}
         >
           <p>{optimisticTodo.description}</p>
@@ -167,7 +167,7 @@ export function TodoItem({ todo }: { todo: Item }) {
             value="edit-task"
             onClick={() => setIsEditing(true)}
             disabled={optimisticTodo.completed || isActionInProgress}
-            className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+            className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-700"
             aria-label="Edit task"
           >
             <EditIcon className="size-4" />
@@ -186,7 +186,7 @@ export function TodoItem({ todo }: { todo: Item }) {
             }
           }}
           disabled={optimisticTodo.completed || isEditing || isActionInProgress}
-          className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-25 dark:border-gray-700 dark:hover:bg-gray-700"
+          className="rounded-full border border-gray-200 p-1 transition hover:bg-gray-200 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-700"
           aria-label="Delete task"
         >
           <DeleteIcon className="size-4" />

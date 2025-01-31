@@ -78,7 +78,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                   id="name"
                   required
                   minLength={2}
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
+                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                   placeholder="Enter your name"
                   aria-invalid={
                     actionData?.fieldErrors?.name ? true : undefined
@@ -106,7 +106,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                   id="email"
                   autoComplete="email"
                   required
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
+                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                   placeholder="Enter your email address"
                   aria-invalid={
                     actionData?.fieldErrors?.email ? true : undefined
@@ -147,7 +147,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
                     autoComplete="new-password"
                     required
                     minLength={8}
-                    className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-25 dark:border-white/50"
+                    className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                     placeholder="Enter your password"
                     aria-invalid={
                       actionData?.fieldErrors?.password ? true : undefined
