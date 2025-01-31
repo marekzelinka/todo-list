@@ -1,17 +1,7 @@
-import crypto from "crypto";
 import { ObjectId } from "mongodb";
+import * as crypto from "node:crypto";
 import type { User } from "~/types";
-import { mongodb } from "~/utils/mongodb.server";
-
-if (!process.env.MONGODB_DBNAME) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_DBNAME"');
-}
-if (!process.env.MONGODB_COLL_USERS) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_COLL_USERS"');
-}
-
-const dbName = process.env.MONGODB_DBNAME;
-const collUsers = process.env.MONGODB_COLL_USERS;
+import { collUsers, dbName, mongodb } from "~/utils/db.server";
 
 export async function createUser(
   name: string,

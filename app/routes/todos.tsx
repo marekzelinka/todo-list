@@ -3,9 +3,16 @@ import { AddTodo } from "~/components/AddTodo";
 import { TodoActions } from "~/components/TodoActions";
 import { TodoList } from "~/components/TodoList";
 import { TodoViewFilter } from "~/components/TodoViewFilter";
+import {
+  clearCompletedTodos,
+  createTodo,
+  deleteAllTodos,
+  deleteTodo,
+  getAllTodos,
+  updateTodo,
+} from "~/models/todo";
 import type { View } from "~/types";
 import { requireUserId } from "~/utils/auth.server";
-import { todos } from "~/utils/db.server";
 import type { Route } from "./+types/todos";
 
 export const meta: Route.MetaFunction = () => {
@@ -19,14 +26,16 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireUserId(request);
+  const userId = await requireUserId(request);
 
-  const tasks = await todos.read();
+  const tasks = await getAllTodos(userId);
 
   return { tasks };
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const userId = await requireUserId(request);
+
   const formData = await request.formData();
 
   const intent = formData.get("intent");
@@ -34,15 +43,15 @@ export async function action({ request }: Route.ActionArgs) {
     case "create-task": {
       const description = String(formData.get("description"));
 
-      await todos.create(description);
+      await createTodo(userId, description);
 
       break;
     }
     case "toggle-task-completion": {
-      const id = String(formData.get("id"));
+      const todoId = String(formData.get("id"));
       const completed = String(formData.get("completed"));
 
-      await todos.update(id, {
+      await updateTodo(userId, todoId, {
         completed: completed === "true",
         completedAt: completed === "true" ? new Date() : undefined,
       });
@@ -50,12 +59,11 @@ export async function action({ request }: Route.ActionArgs) {
       break;
     }
     case "save-task": {
-      const id = String(formData.get("id"));
+      const todoId = String(formData.get("id"));
       const description = String(formData.get("description"));
 
-      await todos.update(id, {
+      await updateTodo(userId, todoId, {
         description,
-        editing: false,
       });
 
       break;
@@ -63,17 +71,17 @@ export async function action({ request }: Route.ActionArgs) {
     case "delete-task": {
       const id = String(formData.get("id"));
 
-      await todos.delete(id);
+      await deleteTodo(userId, id);
 
       break;
     }
     case "clear-completed-tasks": {
-      await todos.clearCompleted();
+      await clearCompletedTodos(userId);
 
       break;
     }
     case "delete-all-tasks": {
-      await todos.deleteAll();
+      await deleteAllTodos(userId);
 
       break;
     }

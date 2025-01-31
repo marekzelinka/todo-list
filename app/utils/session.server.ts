@@ -6,7 +6,7 @@ import {
   type SessionStorage,
 } from "react-router";
 
-import { mongodb } from "./mongodb.server";
+import { mongodb } from "./db.server";
 
 if (!process.env.MONGODB_DBNAME) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_DBNAME"');
