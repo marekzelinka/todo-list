@@ -15,7 +15,7 @@ export async function getUserId(request: Request) {
 export async function requireUserId(request: Request) {
   const userId = await getUserId(request);
   if (!userId) {
-    throw signoutUser();
+    throw requireSignin();
   }
 
   return userId;
@@ -29,7 +29,7 @@ export async function requireUser(request: Request) {
 
   const { error, data: user } = await getUser(userId);
   if (error || !user) {
-    throw signoutUser();
+    throw requireSignin();
   }
 
   return {
@@ -39,7 +39,7 @@ export async function requireUser(request: Request) {
   };
 }
 
-export function signoutUser() {
+export function requireSignin() {
   return redirect("/signin", {
     /**
      * Clear the cookie to handle cases where the session ID remains in the

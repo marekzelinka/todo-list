@@ -131,3 +131,17 @@ export async function updatePassword(token: string, password: string) {
 
   return { error: null, data: user._id.toString() };
 }
+
+export async function deleteUser(id: string) {
+  const client = await mongodb();
+  const collection = client.db(dbName).collection<User>(collUsers);
+
+  const user = await collection.findOne({ _id: new ObjectId(id) });
+  if (!user) {
+    return { error: "User not found.", data: null };
+  }
+
+  await collection.deleteOne({ _id: new ObjectId(id) });
+
+  return { error: null, data: "User deleted successfully." };
+}
