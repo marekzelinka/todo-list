@@ -36,7 +36,6 @@ export async function requireUser(request: Request) {
     id: user._id.toString(),
     name: user.name,
     email: user.email,
-    tasks: user.tasks,
   };
 }
 

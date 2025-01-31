@@ -30,7 +30,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const tasks = await getAllTodos(userId);
 
-  return { tasks };
+  return { tasks: tasks ?? [] };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -86,7 +86,7 @@ export async function action({ request }: Route.ActionArgs) {
       break;
     }
     default: {
-      throw data("Unknown intent", { status: 400 });
+      throw data(`Invalid/Missing intent: ${intent}`, { status: 400 });
     }
   }
 
