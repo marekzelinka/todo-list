@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import {
   data,
-  isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -43,6 +43,23 @@ export async function loader({ request }: Route.LoaderArgs) {
   );
 }
 
+export function ErrorBoundary() {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-4">
+      <h1 className="text-center text-4xl font-extrabold tracking-tight lg:text-5xl">
+        Oops, an error occurred!
+      </h1>
+      <Link
+        to="."
+        replace
+        className="inline-flex justify-center rounded-full border border-gray-200 bg-gray-50 px-8 py-4 text-xl font-medium hover:border-gray-500 dark:border-gray-700 dark:bg-gray-900"
+      >
+        Try again
+      </Link>
+    </div>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useTheme() === "dark" ? "dark" : "";
 
@@ -74,33 +91,4 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
-}
-
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
-
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
-
-  return (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full overflow-x-auto p-4">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
-  );
 }
