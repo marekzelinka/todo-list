@@ -1,12 +1,22 @@
 import { data, Form, Link, redirect, useNavigation } from "react-router";
 import LoaderIcon from "~/components/icons/LoaderIcon";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { initiatePasswordReset } from "~/models/user";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/forgot-password";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: "Forgot Password | Todo App" },
+    { title: "Forgot Password | Taskgun" },
     {
       name: "description",
       content: "Recover your password to regain access to your account.",
@@ -37,41 +47,42 @@ export default function ForgotPassword({ actionData }: Route.ComponentProps) {
   const isSubmitting = navigation.formAction === "/forgot-password";
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-xl font-extrabold tracking-tight md:text-2xl">
-          Password recovery
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Never mind!{" "}
-          <Link
-            to="/signin"
-            className="relative text-sm font-medium text-blue-500 after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
+    <main className="flex flex-col gap-6">
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle asChild className="text-xl">
+            <h1>Password recovery</h1>
+          </CardTitle>
+          <CardDescription>
+            Never mind!{" "}
+            <Link
+              to="/signin"
+              className="text-foreground underline underline-offset-4"
+            >
+              Take me back to login
+            </Link>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form
+            method="POST"
+            noValidate
+            aria-invalid={actionData?.formError ? true : undefined}
+            aria-describedby={actionData?.formError ? "form-error" : undefined}
           >
-            Take me back to login
-          </Link>
-        </p>
-      </header>
-      <main>
-        <Form
-          method="POST"
-          noValidate
-          aria-invalid={actionData?.formError ? true : undefined}
-          aria-describedby={actionData?.formError ? "form-error" : undefined}
-        >
-          <div className="space-y-4">
-            <fieldset disabled={isSubmitting} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm/5 font-medium">
-                  Email
-                </label>
-                <input
+            <fieldset
+              disabled={isSubmitting}
+              data-disabled={isSubmitting}
+              className="group grid gap-6"
+            >
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
                   type="email"
                   name="email"
                   id="email"
                   autoComplete="email"
                   required
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                   placeholder="Enter your email address"
                   aria-invalid={
                     actionData?.fieldErrors?.email ? true : undefined
@@ -83,39 +94,36 @@ export default function ForgotPassword({ actionData }: Route.ComponentProps) {
                 {actionData?.fieldErrors?.email && (
                   <p
                     id="email-error"
-                    className="text-sm/5 font-medium text-red-500"
+                    className="text-[0.8rem] font-medium text-destructive group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50"
                   >
                     {actionData?.fieldErrors.email}
                   </p>
                 )}
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="relative inline-flex h-9 w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200/50 bg-gradient-to-tl from-[#00fff0] to-[#0083fe] px-4 py-2 text-sm font-medium shadow transition hover:border-gray-500 disabled:pointer-events-none disabled:opacity-50 dark:border-white/50 dark:from-[#8e0e00] dark:to-[#1f1c18] dark:hover:border-white"
+                className="relative"
               >
                 {isSubmitting ? (
-                  <div
-                    className="absolute inset-y-0 left-4 flex items-center"
-                    aria-hidden
-                  >
-                    <LoaderIcon className="size-4 animate-spin" />
+                  <div className="absolute inset-y-0 left-4 flex items-center">
+                    <LoaderIcon aria-hidden className="size-4 animate-spin" />
                   </div>
                 ) : null}
                 {isSubmitting ? "Recovering…" : "Recover"}
-              </button>
+              </Button>
+              {actionData?.formError && (
+                <p
+                  id="form-error"
+                  className="text-[0.8rem] font-medium text-destructive group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50"
+                >
+                  {actionData?.formError}
+                </p>
+              )}
             </fieldset>
-            {actionData?.formError && (
-              <div
-                id="form-error"
-                className="block text-sm/5 font-medium text-red-500"
-              >
-                {actionData?.formError}
-              </div>
-            )}
-          </div>
-        </Form>
-      </main>
-    </div>
+          </Form>
+        </CardContent>
+      </Card>
+    </main>
   );
 }

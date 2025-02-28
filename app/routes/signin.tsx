@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { LoaderIcon } from "lucide-react";
 import { data, Form, Link, redirect, useNavigation } from "react-router";
-import EyeIcon from "~/components/icons/EyeIcon";
-import EyeOffIcon from "~/components/icons/EyeOffIcon";
-import LoaderIcon from "~/components/icons/LoaderIcon";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { PasswordInput } from "~/components/ui/password-input";
 import { verifyUser } from "~/models/user";
 import { commitSession, getSession } from "~/utils/session.server";
 import { validateAuthForm } from "~/utils/user-validation";
@@ -10,7 +24,7 @@ import type { Route } from "./+types/signin";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: "Sign In | Todo App" },
+    { title: "Sign In | Taskgun" },
     {
       name: "description",
       content: "Access your account to manage your tasks.",
@@ -47,44 +61,43 @@ export default function Signin({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.formAction === "/signin";
 
-  const [showPassword, setShowPassword] = useState(false);
-
   return (
-    <div className="space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-xl font-extrabold tracking-tight md:text-2xl">
-          Sign in
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Don&apos;t have an account?{" "}
-          <Link
-            to="/signup"
-            className="relative text-sm font-medium text-blue-500 after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
+    <main className="flex flex-col gap-6">
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle asChild className="text-xl">
+            <h1>Sign in to your account</h1>
+          </CardTitle>
+          <CardDescription>
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-foreground underline underline-offset-4"
+            >
+              Sign up
+            </Link>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form
+            method="POST"
+            noValidate
+            aria-invalid={actionData?.formError ? true : undefined}
+            aria-describedby={actionData?.formError ? "form-error" : undefined}
           >
-            Sign up
-          </Link>
-        </p>
-      </header>
-      <main>
-        <Form
-          method="POST"
-          noValidate
-          aria-invalid={actionData?.formError ? true : undefined}
-          aria-describedby={actionData?.formError ? "form-error" : undefined}
-        >
-          <div className="space-y-4">
-            <fieldset disabled={isSubmitting} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm/5 font-medium">
-                  Email
-                </label>
-                <input
+            <fieldset
+              disabled={isSubmitting}
+              data-disabled={isSubmitting}
+              className="group grid gap-6"
+            >
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
                   type="email"
                   name="email"
                   id="email"
                   autoComplete="email"
                   required
-                  className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
                   placeholder="Enter your email address"
                   aria-invalid={
                     actionData?.fieldErrors?.email ? true : undefined
@@ -96,102 +109,88 @@ export default function Signin({ actionData }: Route.ComponentProps) {
                 {actionData?.fieldErrors?.email && (
                   <p
                     id="email-error"
-                    className="text-sm/5 font-medium text-red-500"
+                    className="text-[0.8rem] font-medium text-destructive group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50"
                   >
                     {actionData?.fieldErrors.email}
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between gap-4">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm/5 font-medium"
-                  >
-                    Password
-                  </label>
+              <div className="grid gap-2">
+                <div className="flex">
+                  <Label htmlFor="password">Password</Label>
                   <Link
                     to="/forgot-password"
-                    className="relative text-sm/5 font-medium text-blue-500 after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    id="password"
-                    autoComplete="current-password"
-                    required
-                    minLength={8}
-                    className="flex h-9 w-full rounded-3xl border border-gray-200 bg-transparent px-3 py-2 text-sm shadow-sm disabled:pointer-events-none disabled:opacity-50 dark:border-white/50"
-                    placeholder="Enter your password"
-                    aria-invalid={
-                      actionData?.fieldErrors?.password ? true : undefined
-                    }
-                    aria-describedby={
-                      actionData?.fieldErrors?.password
-                        ? "password-error"
-                        : undefined
-                    }
-                  />
-                  <div
-                    className="absolute inset-y-0 right-4 flex items-center"
-                    aria-hidden
-                  >
-                    <button
-                      tabIndex={-1}
-                      type="button"
-                      onClick={() =>
-                        setShowPassword((prevPassword) => !prevPassword)
-                      }
-                      className="inline-flex text-gray-200 transition-colors hover:text-black/50 disabled:opacity-50 dark:text-white/50 dark:hover:text-white"
-                    >
-                      {showPassword ? (
-                        <EyeIcon className="size-4" />
-                      ) : (
-                        <EyeOffIcon className="size-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
+                <PasswordInput
+                  name="password"
+                  id="password"
+                  autoComplete="current-password"
+                  required
+                  minLength={8}
+                  placeholder="Enter your password"
+                  aria-invalid={
+                    actionData?.fieldErrors?.password ? true : undefined
+                  }
+                  aria-describedby={
+                    actionData?.fieldErrors?.password
+                      ? "password-error"
+                      : undefined
+                  }
+                />
                 {actionData?.fieldErrors?.password && (
                   <p
                     id="password-error"
-                    className="text-sm/5 font-medium text-red-500"
+                    className="text-[0.8rem] font-medium text-destructive group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50"
                   >
                     {actionData?.fieldErrors.password}
                   </p>
                 )}
               </div>
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="relative inline-flex h-9 w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200/50 bg-gradient-to-tl from-[#00fff0] to-[#0083fe] px-4 py-2 text-sm font-medium shadow transition hover:border-gray-500 disabled:pointer-events-none disabled:opacity-50 dark:border-white/50 dark:from-[#8e0e00] dark:to-[#1f1c18] dark:hover:border-white"
+                className="relative"
               >
                 {isSubmitting ? (
-                  <div
-                    className="absolute inset-y-0 left-4 flex items-center"
-                    aria-hidden
-                  >
-                    <LoaderIcon className="size-4 animate-spin" />
+                  <div className="absolute inset-y-0 left-4 flex items-center">
+                    <LoaderIcon aria-hidden className="size-4 animate-spin" />
                   </div>
                 ) : null}
                 {isSubmitting ? "Signing in…" : "Sign in"}
-              </button>
+              </Button>
+              {actionData?.formError && (
+                <p
+                  id="form-error"
+                  className="text-[0.8rem] font-medium text-destructive group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50"
+                >
+                  {actionData?.formError}
+                </p>
+              )}
             </fieldset>
-            {actionData?.formError && (
-              <div
-                id="form-error"
-                className="block text-sm/5 font-medium text-red-500"
-              >
-                {actionData?.formError}
-              </div>
-            )}
-          </div>
-        </Form>
-      </main>
-    </div>
+          </Form>
+        </CardContent>
+      </Card>
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Privacy Notice</AccordionTrigger>
+          <AccordionContent>
+            We won't use your email address for anything other than
+            authenticating with this demo application. This app doesn't send
+            email anyway, so you can put whatever fake email address you want.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Terms of Service</AccordionTrigger>
+          <AccordionContent>
+            This is a portfolio project, there are no terms of service. Don't be
+            surprised if your data dissappears.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </main>
   );
 }

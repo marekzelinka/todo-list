@@ -33,7 +33,7 @@ export default function ThemeSwitcher() {
         onSubmit={() => {
           detailsRef.current?.removeAttribute("open");
         }}
-        className="absolute top-full right-0 z-50 mt-2 w-36 min-w-[8rem] overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 py-1 text-sm font-semibold ring-1 shadow-lg ring-slate-900/10 dark:border-gray-700 dark:bg-gray-900 dark:ring-0"
+        className="absolute top-full right-0 z-50 mt-2 w-36 min-w-[8rem] overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 py-1 text-sm font-semibold shadow-lg ring-1 ring-slate-900/10 dark:border-gray-700 dark:bg-gray-900 dark:ring-0"
         aria-roledescription="Theme switcher"
       >
         <input

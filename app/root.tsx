@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import {
   data,
   Link,
@@ -66,7 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className="font-system bg-white/90 antialiased dark:bg-gray-900"
+      // className="font-system bg-white/90 antialiased dark:bg-gray-900"
     >
       <head>
         <ThemeScript />
@@ -76,10 +75,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body
-        className={clsx(
-          "flex min-h-screen max-w-[100vw] flex-col overflow-x-hidden bg-gradient-to-r from-[#00fff0] to-[#0083fe] px-4 py-8 text-black dark:from-[#8E0E00] dark:to-[#1F1C18] dark:text-white",
-          theme,
-        )}
+        className={theme}
+        // className={clsx(
+        //   "flex min-h-screen max-w-[100vw] flex-col overflow-x-hidden bg-gradient-to-r from-[#00fff0] to-[#0083fe] px-4 py-8 text-black dark:from-[#8E0E00] dark:to-[#1F1C18] dark:text-white",
+        //   theme,
+        // )}
       >
         {children}
         <ScrollRestoration />
