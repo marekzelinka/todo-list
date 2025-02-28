@@ -1,5 +1,5 @@
 import { LoaderIcon } from "lucide-react";
-import { data, Form, Link, redirect, useNavigation } from "react-router";
+import { data, Form, href, Link, redirect, useNavigation } from "react-router";
 import {
   Accordion,
   AccordionContent,
@@ -22,15 +22,13 @@ import { commitSession, getSession } from "~/utils/session.server";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/signin";
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: "Sign In | Taskgun" },
-    {
-      name: "description",
-      content: "Access your account to manage your tasks.",
-    },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Sign In | Taskgun" },
+  {
+    name: "description",
+    content: "Access your account to manage your tasks.",
+  },
+];
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -52,14 +50,14 @@ export async function action({ request }: Route.ActionArgs) {
 
   // Login succeeded, send them to the home page.
   session.set("_id", id as string);
-  return redirect("/", {
+  return redirect(href("/"), {
     headers: { "Set-Cookie": await commitSession(session) },
   });
 }
 
 export default function Signin({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === "/signin";
+  const isSubmitting = navigation.formAction === href("/signin");
 
   return (
     <main className="flex flex-col gap-6">
@@ -71,7 +69,7 @@ export default function Signin({ actionData }: Route.ComponentProps) {
           <CardDescription>
             Don&apos;t have an account?{" "}
             <Link
-              to="/signup"
+              to={href("/signup")}
               className="text-foreground underline underline-offset-4"
             >
               Sign up
@@ -80,7 +78,7 @@ export default function Signin({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form
-            method="POST"
+            method="post"
             noValidate
             aria-invalid={actionData?.formError ? true : undefined}
             aria-describedby={actionData?.formError ? "form-error" : undefined}
@@ -119,7 +117,7 @@ export default function Signin({ actionData }: Route.ComponentProps) {
                 <div className="flex">
                   <Label htmlFor="password">Password</Label>
                   <Link
-                    to="/forgot-password"
+                    to={href("/forgot-password")}
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Forgot password?

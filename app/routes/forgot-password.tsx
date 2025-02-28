@@ -1,5 +1,5 @@
-import { data, Form, Link, redirect, useNavigation } from "react-router";
-import LoaderIcon from "~/components/icons/LoaderIcon";
+import { LoaderIcon } from "lucide-react";
+import { data, Form, href, Link, redirect, useNavigation } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -14,15 +14,13 @@ import { initiatePasswordReset } from "~/models/user";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/forgot-password";
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: "Forgot Password | Taskgun" },
-    {
-      name: "description",
-      content: "Recover your password to regain access to your account.",
-    },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Forgot Password | Taskgun" },
+  {
+    name: "description",
+    content: "Recover your password to regain access to your account.",
+  },
+];
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -39,12 +37,12 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ formError: error, fieldErrors: null }, { status: 400 });
   }
 
-  return redirect(`/reset-password?token=${token}`);
+  return redirect(`${href("/reset-password")}?token=${token}`);
 }
 
 export default function ForgotPassword({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === "/forgot-password";
+  const isSubmitting = navigation.formAction === href("/forgot-password");
 
   return (
     <main className="flex flex-col gap-6">
@@ -56,7 +54,7 @@ export default function ForgotPassword({ actionData }: Route.ComponentProps) {
           <CardDescription>
             Never mind!{" "}
             <Link
-              to="/signin"
+              to={href("/signin")}
               className="text-foreground underline underline-offset-4"
             >
               Take me back to login
@@ -65,7 +63,7 @@ export default function ForgotPassword({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form
-            method="POST"
+            method="post"
             noValidate
             aria-invalid={actionData?.formError ? true : undefined}
             aria-describedby={actionData?.formError ? "form-error" : undefined}

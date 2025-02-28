@@ -1,4 +1,4 @@
-import { redirect } from "react-router";
+import { href, redirect } from "react-router";
 import { deleteUser } from "~/models/user";
 import { requireSignin } from "~/utils/auth.server";
 import { destroySession, getSession } from "~/utils/session.server";
@@ -16,7 +16,7 @@ export async function action({ request }: Route.ActionArgs) {
     throw error;
   }
 
-  return redirect("/signup", {
+  return redirect(href("/signup"), {
     headers: {
       "Set-Cookie": await destroySession(session),
     },

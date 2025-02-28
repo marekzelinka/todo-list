@@ -28,9 +28,9 @@ export const toggleVariants = cva(
 );
 
 export function Toggle({
-  className,
   variant,
   size,
+  className,
   ...props
 }: ComponentProps<typeof TogglePrimitive.Root> &
   VariantProps<typeof toggleVariants>) {

@@ -1,5 +1,5 @@
-import { data, Form, Link, redirect, useNavigation } from "react-router";
-import LoaderIcon from "~/components/icons/LoaderIcon";
+import { LoaderIcon } from "lucide-react";
+import { data, Form, href, Link, redirect, useNavigation } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -15,15 +15,13 @@ import { createUser } from "~/models/user";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/signup";
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: "Sign Up | Taskgun" },
-    {
-      name: "description",
-      content: "Create an account to manage your tasks efficiently.",
-    },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Sign Up | Taskgun" },
+  {
+    name: "description",
+    content: "Create an account to manage your tasks efficiently.",
+  },
+];
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -42,12 +40,12 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ formError: error, fieldErrors: null }, { status: 400 });
   }
 
-  return redirect("/signin");
+  return redirect(href("/signin"));
 }
 
 export default function Signup({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === "/signup";
+  const isSubmitting = navigation.formAction === href("/signup");
 
   return (
     <main className="flex flex-col gap-6">
@@ -59,7 +57,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
           <CardDescription>
             Already have an account?{" "}
             <Link
-              to="/signin"
+              to={href("/signin")}
               className="text-foreground underline underline-offset-4"
             >
               Sign in
@@ -68,7 +66,7 @@ export default function Signup({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form
-            method="POST"
+            method="post"
             noValidate
             aria-invalid={actionData?.formError ? true : undefined}
             aria-describedby={actionData?.formError ? "form-error" : undefined}

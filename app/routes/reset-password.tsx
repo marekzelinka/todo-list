@@ -1,5 +1,5 @@
-import { data, Form, Link, redirect, useNavigation } from "react-router";
-import LoaderIcon from "~/components/icons/LoaderIcon";
+import { LoaderIcon } from "lucide-react";
+import { data, Form, href, Link, redirect, useNavigation } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -14,15 +14,13 @@ import { updatePassword } from "~/models/user";
 import { validateAuthForm } from "~/utils/user-validation";
 import type { Route } from "./+types/reset-password";
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: "Reset Password | Taskgun" },
-    {
-      name: "description",
-      content: "Set a new password to secure your account.",
-    },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Reset Password | Taskgun" },
+  {
+    name: "description",
+    content: "Set a new password to secure your account.",
+  },
+];
 
 export async function action({ request }: Route.ActionArgs) {
   const url = new URL(request.url);
@@ -43,12 +41,12 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ formError: error, fieldErrors: null }, { status: 400 });
   }
 
-  return redirect("/signin");
+  return redirect(href("/signin"));
 }
 
 export default function ResetPassword({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === "/reset-password";
+  const isSubmitting = navigation.formAction === href("/reset-password");
 
   return (
     <main className="flex flex-col gap-6">
@@ -60,7 +58,7 @@ export default function ResetPassword({ actionData }: Route.ComponentProps) {
           <CardDescription>
             Never mind!{" "}
             <Link
-              to="/signin"
+              to={href("/signin")}
               className="text-foreground underline underline-offset-4"
             >
               Take me back to login
@@ -69,7 +67,7 @@ export default function ResetPassword({ actionData }: Route.ComponentProps) {
         </CardHeader>
         <CardContent>
           <Form
-            method="POST"
+            method="post"
             noValidate
             aria-invalid={actionData?.formError ? true : undefined}
             aria-describedby={actionData?.formError ? "form-error" : undefined}

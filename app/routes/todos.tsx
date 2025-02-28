@@ -15,15 +15,9 @@ import type { View } from "~/types";
 import { requireUserId } from "~/utils/auth.server";
 import type { Route } from "./+types/todos";
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    { title: "Todo App" },
-    {
-      name: "description",
-      content: "A minimalistic todo app built with Remix.",
-    },
-  ];
-};
+export const meta: Route.MetaFunction = () => [
+  { title: "Your todos | Taskgun" },
+];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request);
@@ -89,8 +83,6 @@ export async function action({ request }: Route.ActionArgs) {
       throw data(`Invalid/Missing intent: ${intent}`, { status: 400 });
     }
   }
-
-  return { ok: true };
 }
 
 export default function Todos({ loaderData }: Route.ComponentProps) {

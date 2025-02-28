@@ -1,5 +1,7 @@
+import { HomeIcon, RefreshCwIcon } from "lucide-react";
 import {
   data,
+  href,
   Link,
   Links,
   Meta,
@@ -10,6 +12,8 @@ import {
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { ThemeScript, useTheme } from "./components/ThemeScript";
+import { Button } from "./components/ui/button";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { requireUser } from "./utils/auth.server";
 import { parseTheme } from "./utils/theme.server";
 
@@ -32,10 +36,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
 
   return data(
-    {
-      theme,
-      user,
-    },
+    { theme, user },
     {
       headers: { Vary: "Cookie" },
     },
@@ -44,17 +45,28 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export function ErrorBoundary() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
-      <h1 className="text-center text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Oops, an error occurred!
-      </h1>
-      <Link
-        to="."
-        replace
-        className="inline-flex justify-center rounded-full border border-gray-200 bg-gray-50 px-8 py-4 text-xl font-medium hover:border-gray-500 dark:border-gray-700 dark:bg-gray-900"
-      >
-        Try again
-      </Link>
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-3xl">
+        <div className="flex flex-col gap-6">
+          <h1 className="text-text-balance text-center text-4xl font-bold tracking-tight md:text-5xl">
+            Oops, an error occurred!
+          </h1>
+          <div className="flex justify-center gap-4">
+            <Button asChild size="lg">
+              <Link to="." replace>
+                <RefreshCwIcon aria-hiden />
+                Try again
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to={href("/")}>
+                <HomeIcon aria-hidden />
+                Go home
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -63,10 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useTheme() === "dark" ? "dark" : "";
 
   return (
-    <html
-      lang="en"
-      // className="font-system bg-white/90 antialiased dark:bg-gray-900"
-    >
+    <html lang="en">
       <head>
         <ThemeScript />
         <meta charSet="utf-8" />
@@ -74,14 +83,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body
-        className={theme}
-        // className={clsx(
-        //   "flex min-h-screen max-w-[100vw] flex-col overflow-x-hidden bg-gradient-to-r from-[#00fff0] to-[#0083fe] px-4 py-8 text-black dark:from-[#8E0E00] dark:to-[#1F1C18] dark:text-white",
-        //   theme,
-        // )}
-      >
-        {children}
+      <body className={theme}>
+        <TooltipProvider>{children}</TooltipProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

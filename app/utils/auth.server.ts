@@ -1,4 +1,4 @@
-import { redirect } from "react-router";
+import { href, redirect } from "react-router";
 import { getUser } from "~/models/user";
 import { getSession } from "./session.server";
 
@@ -40,7 +40,7 @@ export async function requireUser(request: Request) {
 }
 
 export function requireSignin() {
-  return redirect("/signin", {
+  return redirect(href("/signin"), {
     /**
      * Clear the cookie to handle cases where the session ID remains in the
      * cookie but is no longer valid in the database. Without this,
